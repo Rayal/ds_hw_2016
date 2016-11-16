@@ -32,29 +32,24 @@ TCP_RECEIVE_BUFFER_SIZE = 1024*1024
 # @TODO: Control how much to store in memory
 # Currently not controlled - big input may affect performance (swapping issue)
 MAX_PDU_SIZE = 200*1024*1024 # Reasonable amount of data to store in RAM
-
-# Directory with all the files.
-
 # Requests --------------------------------------------------------------------
-__REQ_PUBLISH = '1'
-__REQ_LAST = '2'
-__REQ_GET = '3'
-__REQ_GET_N_LAST = '4'
-__CTR_MSGS = { __REQ_GET:'Get message by id',
-               __REQ_LAST:'Get iDs of last N messages',
-               __REQ_PUBLISH:'Publish new message',
-               __REQ_GET_N_LAST:'Get last N messages'
+__REQ_DIR = '1'
+__REQ_FILE = '2'
+__REQ_EDIT = '3'
+__CTR_MSGS = { __REQ_DIR:'Get directory data',
+               __REQ_FILE:'Get file',
+               __REQ_EDIT:'Edit file'
               }
 # Responses--------------------------------------------------------------------
 __RSP_OK = '0'
 __RSP_BADFORMAT = '1'
-__RSP_MSGNOTFOUND = '2'
+__RSP_FILENOTFOUND = '2'
 __RSP_UNKNCONTROL = '3'
 __RSP_ERRTRANSM = '4'
 __RSP_CANT_CONNECT = '5'
 __ERR_MSGS = { __RSP_OK:'No Error',
                __RSP_BADFORMAT:'Malformed message',
-               __RSP_MSGNOTFOUND:'Message not found by iD',
+               __RSP_FILENOTFOUND:'Message not found by iD',
                __RSP_UNKNCONTROL:'Unknown control code',
                __RSP_ERRTRANSM:'Transmission Error',
                __RSP_CANT_CONNECT:'Can\'t connect to server'

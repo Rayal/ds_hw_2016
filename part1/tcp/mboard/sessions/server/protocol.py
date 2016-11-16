@@ -32,9 +32,10 @@ LOG = logging.getLogger()
 # Imports----------------------------------------------------------------------
 from exceptions import ValueError # for handling number format exceptions
 from tcp.mboard.sessions.common import __RSP_BADFORMAT,\
-     __REQ_PUBLISH, __MSG_FIELD_SEP, __RSP_OK, __REQ_LAST,\
-     __REQ_GET, __RSP_MSGNOTFOUND, __RSP_UNKNCONTROL, __REQ_GET_N_LAST
+     __REQ_DIR, __MSG_FIELD_SEP, __RSP_OK, __REQ_EDIT,\
+     __REQ_FILE, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL
 from socket import error as soc_err
+import tcp.mboard.sessions.server.fileservice as fs
 # Constants -------------------------------------------------------------------
 ___NAME = 'MBoard Protocol'
 ___VER = '0.1.0.0'
@@ -69,63 +70,39 @@ def server_process(board,message,source,oldprotocol=False):
         @param oldprotocol: backward compatibility flag (for 0.0.0.x clients)
         @returns string, response to send to client
     '''
-    print("Message: %s"%message)
+
     LOG.debug('Received request [%d bytes] in total' % len(message))
     if len(message) < 2:
         LOG.degug('Not enough data received from %s ' % message)
         return __RSP_BADFORMAT
     LOG.debug('Request control code (%s)' % message[0])
-    if message.startswith(__REQ_PUBLISH + __MSG_FIELD_SEP):
+
+    if message.startswith(__REQ_EDIT + __MSG_FIELD_SEP):
         msg = message[2:]
-        LOG.debug('Client %s:%d will publish: '\
-            '%s' % (source+((msg[:60]+'...' if len(msg) > 60 else msg),)))
-        m_id = board.publish(msg,source)
-        LOG.info('Published new message, uuid: %d' % m_id)
-        return __RSP_OK
-    elif message.startswith(__REQ_LAST + __MSG_FIELD_SEP):
+        LOG.debug('Client %s:%d will edit file %s ' % (source+(msg[-2],)))
+        m_id = ps.change_file(msg[-2], msg[-1])
+        if m_id == 0:
+            LOG.info('Successfully edited file %s' % msg[-2])
+            return __RSP_OK
+        LOG.error("Unable to edit file %s" % msg[-2])
+        return __RSP_FILENOTFOUND
+
+    elif message.startswith(__REQ_DIR + __MSG_FIELD_SEP):
         s = message[2:]
-        try:
-            n = int(s)
-            LOG.debug('New message listing request from %s:%d, '\
-                      'messages %d' % (source+(n,)))
-        except ValueError:
-            LOG.debug('Integer required, %s received' % s)
-            return __RSP_BADFORMAT
-        ids = board.last(n)
-        LOG.debug('Last %d ids: %s ' % (n,','.join(map(str,ids))))
-        return __MSG_FIELD_SEP.join((__RSP_OK,)+tuple(map(str,ids)))
-    elif message.startswith(__REQ_GET + __MSG_FIELD_SEP):
+        LOG.debug('New directory content request from %s:%d: '% (source+(s[-1],)))
+        ret = map(str,fs.get_dir())
+        return __MSG_FIELD_SEP.join((__RSP_OK,)+tuple(ret))
+
+    elif message.startswith(__REQ_FILE + __MSG_FIELD_SEP):
         s = message[2:]
-        try:
-            m_id = int(s)
-            LOG.debug('New message request by id from %s:%d, '\
-                      'id %d' % (source+(m_id,)))
-        except ValueError:
-            LOG.debug('Integer required, %s received' % s)
-            return __RSP_BADFORMAT
-        m = board.get(m_id)
+        LOG.debug('New file request from %s:%d: %s' % (source+s[-1]))
+        m = fs.get_file(s[-1])
         if m == None:
-            LOG.debug('No messages by iD: %d' % m_id)
-            return __RSP_MSGNOTFOUND
+            LOG.debug('No such file: %s' % s[-1])
+            return __RSP_FILENOTFOUND
         m = map(str,m)
         return __MSG_FIELD_SEP.join((__RSP_OK,)+tuple(m))
-    elif message.startswith(__REQ_GET_N_LAST + __MSG_FIELD_SEP):
-        s = message[2:]
-        try:
-            n = int(s)
-            LOG.debug('Client %s:%d requests %s last'\
-                      'messages' % (source+('all' if n <= 0 else '%d' % n,)))
-        except ValueError:
-            LOG.debug('Integer required, %s received' % s)
-            return __RSP_BADFORMAT
-        # Get last N ids
-        ids = board.last(n)
-        # Get messages by ids
-        msgs = map(board.get,ids)
-        # Turn everything to string, use space to separate message meta-info
-        #  [ "<timestamp> <ip> <port> <message>", ... ]
-        msgs = map(lambda x: ' '.join(map(str,x)),msgs)
-        return __MSG_FIELD_SEP.join((__RSP_OK,)+tuple(msgs))
+
     else:
         LOG.debug('Unknown control message received: %s ' % message)
         return __RSP_UNKNCONTROL

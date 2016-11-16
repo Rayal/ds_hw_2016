@@ -134,7 +134,7 @@ def mboard_server_main(args):
                       'from %s:%d' % ((len(m),)+source))
             # Issue MBoard protocol to process the
             # request message (m) send from the client (source)
-            r = protocol.server_process(board, m, source)
+            r = protocol.server_process(m, source)
             # Try to send the response (r) to client
             # Shutdown the TX pipe of the socket after sending
             try:
