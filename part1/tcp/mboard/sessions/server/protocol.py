@@ -80,7 +80,7 @@ def server_process(board,message,source,oldprotocol=False):
     if message.startswith(__REQ_EDIT + __MSG_FIELD_SEP):
         msg = message[2:]
         LOG.debug('Client %s:%d will edit file %s ' % (source+(msg[-2],)))
-        m_id = ps.change_file(msg[-2], msg[-1])
+        m_id = fs.change_file(msg[-2], msg[-1])
         if m_id == 0:
             LOG.info('Successfully edited file %s' % msg[-2])
             return __RSP_OK
