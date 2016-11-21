@@ -30,10 +30,9 @@ FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
 logging.basicConfig(level=logging.DEBUG,format=FORMAT)
 LOG = logging.getLogger()
 # Imports----------------------------------------------------------------------
-from tcp.mboard.sessions.common import  __REQ_PUBLISH,\
-     __RSP_OK, __REQ_GET_N_LAST, __RSP_ERRTRANSM, __RSP_CANT_CONNECT,\
-     __CTR_MSGS, tcp_send, tcp_receive, MBoardProtocolError, __MSG_FIELD_SEP,\
-     __ERR_MSGS
+from tcp.mboard.sessions.common import __RSP_BADFORMAT,\
+     __REQ_DIR, __MSG_FIELD_SEP, __RSP_OK, __REQ_EDIT,\
+     __REQ_FILE, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL
 from socket import socket, AF_INET, SOCK_STREAM
 from socket import error as soc_err
 # Constants -------------------------------------------------------------------
@@ -138,6 +137,28 @@ def __request(srv,r_type,args):
 
     return err,r_args
 
+def request_directory(srv):
+    '''Push changes to file
+    @param srv: tuple ( IP, port ), server socket address
+    @param filename: string, filename of the file that we want to receive
+    @returns True if successfully received, else False
+    '''
+    # Sending request
+    err,data = __request(srv, __REQ_DIR, [])
+    return data if err == __RSP_OK else ""
+
+def request_file(srv, filename):
+    '''Push changes to file
+    @param srv: tuple ( IP, port ), server socket address
+    @param filename: string, filename of the file that we want to receive
+    @returns True if successfully received, else False
+    '''
+    # Try converting to utf-8
+    fname = filename.encode('utf-8')
+    # Sending request
+    err,data = __request(srv, __REQ_FILE, [fname])
+    return data if err == __RSP_OK else ""
+
 def edit(srv, filename, changes):
     '''Push changes to file
     @param srv: tuple ( IP, port ), server socket address
@@ -146,29 +167,8 @@ def edit(srv, filename, changes):
     @returns True if successfully published, else False
     '''
     # Try converting to utf-8
-    msg = m.encode('utf-8')
+    msg = changes.encode('utf-8')
+    fname = filename.encode('utf-8')
     # Sending request
-    err,_ = __request(srv, __REQ_EDIT, filename, [msg])
+    err,_ = __request(srv, __REQ_EDIT, [fname, msg])
     return err == __RSP_OK
-
-def publish(srv,m):
-    '''Publish message
-    @param src: tuple ( IP, port ), server socket address
-    @param m: string, message to publish, maximal length 2^16-32-2 bytes
-    @returns True if successfully published, else False
-    '''
-    # Try converting to utf-8
-    msg = m.encode('utf-8')
-    # Sending request
-    err,_ = __request(srv, __REQ_PUBLISH, [msg])
-    return err == __RSP_OK
-
-def last(srv,n):
-    '''Get last n messages
-    @param src: tuple ( IP, port ), server socket address
-    @param n: int, last n messages
-    @returns list [ tuple ( int: time seconds since UNIX epoch,
-                     str:IP, int:port, str:message ) ... ]
-    '''
-    err,msgs = __request(srv, __REQ_GET_N_LAST, [n])
-    return msgs if err == __RSP_OK else []
