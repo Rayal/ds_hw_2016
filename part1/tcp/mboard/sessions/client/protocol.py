@@ -147,7 +147,7 @@ def request_directory(srv):
     @returns True if successfully received, else False
     '''
     # Sending request
-    err,data = __request(srv, __REQ_DIR, [])
+    err,data = __request(srv, __REQ_DIR, [" "])
     return data if err == __RSP_OK else ""
 
 def request_file(srv, filename):

@@ -78,18 +78,18 @@ def server_process(message,source,oldprotocol=False):
     LOG.debug('Request control code (%s)' % message[0])
 
     if message.startswith(__REQ_EDIT + __MSG_FIELD_SEP):
-        msg = message[2:]
-        LOG.debug('Client %s:%d will edit file %s ' % (source+(msg[-2],)))
-        m_id = fs.change_file(msg[-2], msg[-1])
+        msg = message[2:].split(":")
+        LOG.debug('Client %s:%d will edit file %s ' % (source+(msg[0],)))
+        m_id = fs.change_file(msg[0], msg[1])
         if m_id == 0:
-            LOG.info('Successfully edited file %s' % msg[-2])
+            LOG.info('Successfully edited file %s' % msg[0])
             return __RSP_OK
-        LOG.error("Unable to edit file %s" % msg[-2])
+        LOG.error("Unable to edit file %s" % msg[0])
         return __RSP_FILENOTFOUND
 
     elif message.startswith(__REQ_DIR + __MSG_FIELD_SEP):
         s = message[2:]
-        LOG.debug('New directory content request from %s:%d: '% (source+(s[-1],)))
+        LOG.debug('New directory content request from %s:%d.'%source)
         ret = map(str,fs.get_dir())
         return __MSG_FIELD_SEP.join((__RSP_OK,)+tuple(ret))
 
@@ -101,7 +101,7 @@ def server_process(message,source,oldprotocol=False):
         if m == None:
             LOG.debug('No such file: %s' % s)
             return __RSP_FILENOTFOUND
-        m = map(str,m)
+        #m = map(str,m)
         return __MSG_FIELD_SEP.join((__RSP_OK,)+tuple(m))
 
     else:

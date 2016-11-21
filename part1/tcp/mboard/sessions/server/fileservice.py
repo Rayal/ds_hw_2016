@@ -7,7 +7,7 @@ LOG = logging.getLogger()
 # Setup Path for files --------------------------------------------------------
 import os
 from os.path import abspath
-__PATH = abspath("files/")
+__PATH = abspath("files/") + "/"
 
 def create_file(filename):
     try:
@@ -28,6 +28,7 @@ def get_file(filename, force = True):
         file_handle = open(__PATH + filename, "r")
     except IOError as e:
         LOG.error(e)
+        file_handle = None
     if file_handle == None:
         if force:
             LOG.debug("Creating a new one.")
@@ -41,16 +42,20 @@ def get_file(filename, force = True):
 
 def change_file(filename, changes):
     try:
-        file_handle = open(__PATH + filename, "r+")
-    except IOError:
-        LOG.error("Tried to write to non-existent file")
+        file_handle = open(__PATH + filename, "w")
+        file_handle.write(changes)
+        file_handle.close()
+    except IOError as e:
+        LOG.error(e)
+        return -1
     return 0
 
 def get_dir():
     gen = os.walk(__PATH)
+    print(gen)
     res = ""
     for folder in gen:
-        r = folder[0] + ";"
+        r = folder[0][len(__PATH):] + ";"
         for f in folder[1]:
             r += " "
             r += f
