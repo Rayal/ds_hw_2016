@@ -18,7 +18,7 @@ recv_buffer_length = 1024
 message = client_socket.recv(recv_buffer_length)
 #print message
 CommitData(message)
-client_socket.close()
-s.close()
+#client_socket.close()
+#s.close()
 
 
