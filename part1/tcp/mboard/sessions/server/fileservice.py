@@ -12,24 +12,28 @@ __PATH = abspath("files/")
 def create_file(filename):
     try:
         file_handle = open(__PATH + filename, "w")
+        file_handle.write(" ")
+        file_handle.close()
+        file_handle = open(__PATH + filename, "r")
         return file_handle
-    except IOError:
-        LOG.error("Unable to create file.")
+    except IOError as e:
+        LOG.error(e)
 
     return None
 
 
 def get_file(filename, force = True):
     try:
+        LOG.debug("Opening file %s"%(__PATH + filename))
         file_handle = open(__PATH + filename, "r")
-    except IOError:
-        LOG.debug("File not found, methinks")
+    except IOError as e:
+        LOG.error(e)
+    if file_handle == None:
         if force:
             LOG.debug("Creating a new one.")
             file_handle = create_file(filename)
         else:
             return None
-
     m = file_handle.read()
     file_handle.close()
 

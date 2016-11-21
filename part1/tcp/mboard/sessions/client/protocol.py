@@ -32,7 +32,10 @@ LOG = logging.getLogger()
 # Imports----------------------------------------------------------------------
 from tcp.mboard.sessions.common import __RSP_BADFORMAT,\
      __REQ_DIR, __MSG_FIELD_SEP, __RSP_OK, __REQ_EDIT,\
-     __REQ_FILE, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL
+     __REQ_FILE, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL,\
+     __CTR_MSGS, tcp_send, tcp_receive, __ERR_MSGS,\
+     __RSP_OK, __RSP_BADFORMAT, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL,\
+     __RSP_ERRTRANSM, __RSP_CANT_CONNECT
 from socket import socket, AF_INET, SOCK_STREAM
 from socket import error as soc_err
 # Constants -------------------------------------------------------------------
@@ -159,7 +162,7 @@ def request_file(srv, filename):
     err,data = __request(srv, __REQ_FILE, [fname])
     return data if err == __RSP_OK else ""
 
-def edit(srv, filename, changes):
+def edit_file(srv, filename, changes):
     '''Push changes to file
     @param srv: tuple ( IP, port ), server socket address
     @param filename: string, filename of the file that we want to edit

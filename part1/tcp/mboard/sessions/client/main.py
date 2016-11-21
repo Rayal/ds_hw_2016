@@ -33,7 +33,8 @@ logging.basicConfig(level=logging.DEBUG,format=FORMAT)
 LOG = logging.getLogger()
 # Needed imports ------------------ -------------------------------------------
 from tcp.mboard.sessions.client import protocol
-from tcp.mboard.sessions.client.protocol import publish, last
+from tcp.mboard.sessions.client.protocol import \
+request_directory, request_file, edit_file
 from time import localtime, asctime
 from sys import stdin
 # Constants -------------------------------------------------------------------
@@ -54,58 +55,26 @@ def mboard_client_main(args):
     # Starting client
     LOG.info('%s version %s started ...' % (___NAME, ___VER))
     LOG.info('Using %s version %s' % ( protocol.___NAME, protocol.___VER))
-
-    # Processing arguments
-    # 1.) If -m was provided
-    m = ''
-    if len(args.message) > 0:
-        m = args.message # Message to publish
-        if m == '-':
-            LOG.debug('Will read message from standard input ...')
-            # Read m from STDIN
-            m = stdin.read()
-        LOG.debug('User provided message of %d bytes ' % len(m))
-
-    # Processing arguments
-    # 2.) If -l was provided
-    # Parse integer
-    n = int(args.last)  # Last n messages to fetch
-    n = n if n > 0 else 0 # no negative values allowed
-    LOG.debug('Will request %s published messages'\
-              '' % ('all' if n == 0 else ('last %d' % n)))
-
-    # Server's socket address
     server = (args.host,int(args.port))
 
-    msgs = []
+    dr = request_directory(server)
 
-    try:
-        if len(m) > 0:
-            if publish(server, m):
-                LOG.info('Message published')
-            else:
-                exit(3)
+    print ("Request dir: ", dr)
 
-        # Query messages
-        # With TCP we may get all messages in one request
-        msgs += last(server,n)
-    except KeyboardInterrupt:
-            LOG.debug('Crtrl+C issued ...')
-            LOG.info('Terminating ...')
-            exit(2)
+    fl = request_file(server, "random_name")
 
-    # Split messages by space
-    #  [ "<timestamp> <ip> <port> <message>", ... ]
-    msgs = map(lambda x: x.split(' '),msgs)
-    # Consider 1-st 3 elements: timestamp, ip and port,
-    # and thr rest is the actual message
-    msgs = map(lambda x: tuple(x[:3]+[' '.join(x[3:])]),msgs)
+    print ("Request file: ", fl)
 
-    if len(msgs) > 0:
-        t_form = lambda x: asctime(localtime(float(x)))
-        m_form = lambda x: '%s [%s:%s] -> '\
-                            '%s' % (t_form(x[0]),x[1],x[2],x[3].decode('utf-8'))
-        print 'Board published messages:'
-        print '\n'.join(map(lambda x: m_form(x),msgs))
+    ed = edit_file(server, "random_name", "changes made")
+
+    print ("Edit file: ", ed)
+
+    fl = request_file(server, "random_name")
+
+    print ("Request file:", fl)
+
+    dr = request_directory(server)
+
+    print ("Request dir", dr)
 
     print 'Terminating ...'

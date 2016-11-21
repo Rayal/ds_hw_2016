@@ -29,13 +29,19 @@ if __name__ == '__main__':
                         help='Server UDP port, '\
                         'defaults to %d' % DEFAULT_SERVER_PORT, \
                         default=DEFAULT_SERVER_PORT)
-    parser.add_argument('-m','--message',\
-                        help='Message to publish',\
+    parser.add_argument('-r','--request',\
+                        help='filename requested',\
                         default='')
-    parser.add_argument('-l','--last', metavar='N', type=int,\
+    parser.add_argument('-e','--edit',\
+                        help='filename to be changed',\
+                        default='')
+    parser.add_argument('-m','--message',\
+                        help='changes',\
+                        default='')
+    parser.add_argument('-d','--dir',\
                         help='Get iDs of last N messages,'\
                         'defaults to "all"',\
-                        default=0)
+                        default='')
     args = parser.parse_args()
     # Run Mboard Client
     mboard_client_main(args)

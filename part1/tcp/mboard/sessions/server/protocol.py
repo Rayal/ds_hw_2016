@@ -62,7 +62,7 @@ def __disconnect_client(sock):
     sock.close()
     LOG.info('Disconnected client')
 
-def server_process(board,message,source,oldprotocol=False):
+def server_process(message,source,oldprotocol=False):
     '''Process the client's message, modify the board if needed
         @param board: active message board (static lib.)
         @param message: string, protocol data unit received from client
@@ -95,10 +95,11 @@ def server_process(board,message,source,oldprotocol=False):
 
     elif message.startswith(__REQ_FILE + __MSG_FIELD_SEP):
         s = message[2:]
-        LOG.debug('New file request from %s:%d: %s' % (source+s[-1]))
-        m = fs.get_file(s[-1])
+
+        LOG.debug('New file request from %s:%d: %s' % (source+(s,)))
+        m = fs.get_file(s)
         if m == None:
-            LOG.debug('No such file: %s' % s[-1])
+            LOG.debug('No such file: %s' % s)
             return __RSP_FILENOTFOUND
         m = map(str,m)
         return __MSG_FIELD_SEP.join((__RSP_OK,)+tuple(m))
