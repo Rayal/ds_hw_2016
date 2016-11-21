@@ -138,6 +138,19 @@ def __request(srv,r_type,args):
 
     return err,r_args
 
+def edit(srv, filename, changes):
+    '''Push changes to file
+    @param srv: tuple ( IP, port ), server socket address
+    @param filename: string, filename of the file that we want to edit
+    @param changes: string, the changes to be made
+    @returns True if successfully published, else False
+    '''
+    # Try converting to utf-8
+    msg = m.encode('utf-8')
+    # Sending request
+    err,_ = __request(srv, __REQ_EDIT, filename, [msg])
+    return err == __RSP_OK
+
 def publish(srv,m):
     '''Publish message
     @param src: tuple ( IP, port ), server socket address
