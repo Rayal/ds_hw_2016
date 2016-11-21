@@ -37,15 +37,6 @@ from tcp.mboard.sessions.client.protocol import \
 request_directory, request_file, edit_file
 from time import localtime, asctime
 from sys import stdin
-# Constants -------------------------------------------------------------------
-___NAME = 'MBoard Client'
-___VER = '0.1.0.0'
-___DESC = 'Simple Message Board Client (TCP version)'
-___BUILT = '2016-09-13'
-___VENDOR = 'Copyright (c) 2016 DSLab'
-# Private methods -------------------------------------------------------------
-def __info():
-    return '%s version %s (%s) %s' % (___NAME, ___VER, ___BUILT, ___VENDOR)
 # Not a real main method-------------------------------------------------------
 def mboard_client_main(args):
     '''Runs the Mboard client
@@ -53,8 +44,6 @@ def mboard_client_main(args):
     @param args: ArgParse collected arguments
     '''
     # Starting client
-    LOG.info('%s version %s started ...' % (___NAME, ___VER))
-    LOG.info('Using %s version %s' % ( protocol.___NAME, protocol.___VER))
     server = (args.host,int(args.port))
 
     dr = request_directory(server)

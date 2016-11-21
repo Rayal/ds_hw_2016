@@ -1,11 +1,7 @@
-'''
-Starter Script for MBoard Client CLI application
-Created on Sep 14, 2016
 
-@author: devel
-'''
 # Imports----------------------------------------------------------------------
-from tcp.mboard.sessions.client.main import mboard_client_main
+from tcp.mboard.sessions.client.main import __info, ___VER,\
+    mboard_client_main
 from tcp.mboard.sessions.common import DEFAULT_SERVER_INET_ADDR,\
     DEFAULT_SERVER_PORT
 from argparse import ArgumentParser # Parsing command line arguments
@@ -18,7 +14,8 @@ if __name__ == '__main__':
     # Append script working directory into PYTHONPATH
     path.append(a_path)
     # Parsing arguments
-    parser = ArgumentParser()
+    parser = ArgumentParser(description=__info(),
+                            version = ___VER)
     parser.add_argument('-H','--host',\
                         help='Server INET address '\
                         'defaults to %s' % DEFAULT_SERVER_INET_ADDR, \

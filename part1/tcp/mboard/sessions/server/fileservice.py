@@ -63,5 +63,5 @@ def get_dir():
         for f in folder[2]:
             r += " "
             r += f
-        res += r + "\n"
+        res += r + "|"
     return res

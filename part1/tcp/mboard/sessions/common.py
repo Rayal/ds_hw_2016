@@ -55,7 +55,7 @@ __ERR_MSGS = { __RSP_OK:'No Error',
                __RSP_CANT_CONNECT:'Can\'t connect to server'
                }
 # Field separator for sending multiple values ---------------------------------
-__MSG_FIELD_SEP = ':'
+__MSG_FIELD_SEP = chr(30)
 # Exceptions ------------------------------------------------------------------
 class MBoardProtocolError(Exception):
     '''Should be thrown internally on client or server while receiving the

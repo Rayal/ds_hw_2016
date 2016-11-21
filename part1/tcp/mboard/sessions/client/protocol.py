@@ -1,29 +1,7 @@
-# Implements message board protocol on TCP (client-side)
-# in this protocol client's can send a big messages (delivered by TCP)
-# Therefore there is no need to additionally implement sessions.
-#
-# Also as we can now send big messages we do no need to split the
-# "get last N messages" routine into 2 sub routines, like we did for UDP.
-#
-# Client(c) <-----------> Server requests/responses
-#
-#   publish(M) --0:M---->|
-#      |                 | mboard.put(M,c)
-#      | <------OK-------|
-#
-#   last(N) ---1:N------>|
-#      |                 | if int(N):
-#      |                 |     iDs = mboard.last(N)
-#      | <----- iDs -----|     msgs = map(mboard.get, iDs)
-#      | <-----ERR-------| else
-#
+# Implements file system protocol on TCP (client-side)
+# in this protocol clients can edit plaintext files (delivered by TCP)
 #------------------------------------------------------------------------------
-'''
-MBoard Protocol Client-Side (TCP)
-Created on Aug 23, 2016
 
-@author: devel
-'''
 # Setup Python logging --------------------------------------------------------
 import logging
 FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
@@ -38,13 +16,7 @@ from tcp.mboard.sessions.common import __RSP_BADFORMAT,\
      __RSP_ERRTRANSM, __RSP_CANT_CONNECT
 from socket import socket, AF_INET, SOCK_STREAM
 from socket import error as soc_err
-# Constants -------------------------------------------------------------------
-___NAME = 'MBoard Protocol'
-___VER = '0.1.0.0'
-___DESC = 'State-less Message Board Protocol Client-Side (TCP version)'
-___BUILT = '2016-09-13'
-___VENDOR = 'Copyright (c) 2016 DSLab'
-# Static functions ------------------------------------------------------------
+
 def __disconnect(sock):
     '''Disconnect from the server, close the TCP socket
     @param sock: TCP socket to close
@@ -147,7 +119,7 @@ def request_directory(srv):
     @returns True if successfully received, else False
     '''
     # Sending request
-    err,data = __request(srv, __REQ_DIR, [" "])
+    err,data = __request(srv, __REQ_DIR, [])
     return data if err == __RSP_OK else ""
 
 def request_file(srv, filename):
