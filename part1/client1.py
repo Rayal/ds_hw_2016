@@ -32,7 +32,7 @@ T_filename.grid(row=1, column=1)
 T_text = Text(root, height=20, width=100)
 T_text.grid(row=4, column=0, columnspan=2)
 
-root.title('Client1')
+root.title('Client_1')
 root.minsize(width=600, height=400)
 mainloop()
 
