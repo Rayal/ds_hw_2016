@@ -1,6 +1,6 @@
 # Imports----------------------------------------------------------------------
-from tcp.mboard.sessions.server.main import mboard_server_main
-from tcp.mboard.sessions.common import DEFAULT_SERVER_INET_ADDR,\
+from tcp.server.main import mboard_server_main
+from tcp.common import DEFAULT_SERVER_INET_ADDR,\
     DEFAULT_SERVER_PORT
 from argparse import ArgumentParser # Parsing command line arguments
 from sys import path,argv

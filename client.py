@@ -1,7 +1,7 @@
 import Tkinter
 import tkMessageBox
 from Tkinter import *
-from tcp.mboard.sessions.client.protocol import edit_file, request_file
+from tcp.client.protocol import edit_file, request_file
 
 
 root = Tk()
