@@ -9,7 +9,7 @@ root = Tk()
 server_address = ('127.0.0.1', 7777)
 
 def pulldata():
-    updated_text= request_file(server_address, T_filename.get())[0]
+    updated_text= request_file(server_address, T_filename.get())
     T_text.insert(END, updated_text)
 
 def pushdata():

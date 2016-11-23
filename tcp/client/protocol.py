@@ -16,6 +16,7 @@ from tcp.common import __RSP_BADFORMAT,\
      __RSP_ERRTRANSM, __RSP_CANT_CONNECT
 from socket import socket, AF_INET, SOCK_STREAM
 from socket import error as soc_err
+import zlib
 
 def __disconnect(sock):
     '''Disconnect from the server, close the TCP socket
@@ -120,7 +121,10 @@ def request_directory(srv):
     '''
     # Sending request
     err,data = __request(srv, __REQ_DIR, [])
-    return data if err == __RSP_OK else ""
+    if err != __RSP_OK:
+        return ""
+    data = zlib.decompress(data)
+    return data
 
 def request_file(srv, filename):
     '''Push changes to file
@@ -129,10 +133,13 @@ def request_file(srv, filename):
     @returns True if successfully received, else False
     '''
     # Try converting to utf-8
-    fname = filename.encode('utf-8')
+    fname = zlib.compress(filename.encode('utf-8'))
     # Sending request
     err,data = __request(srv, __REQ_FILE, [fname])
-    return data if err == __RSP_OK else ""
+    if err != __RSP_OK:
+        return ""
+    data = zlib.decompress(data[0])
+    return data
 
 def edit_file(srv, filename, changes):
     '''Push changes to file
@@ -142,8 +149,8 @@ def edit_file(srv, filename, changes):
     @returns True if successfully published, else False
     '''
     # Try converting to utf-8
-    msg = changes.encode('utf-8')
-    fname = filename.encode('utf-8')
+    msg = zlib.compress(changes.encode('utf-8'))
+    fname = zlib.compress(filename.encode('utf-8'))
     # Sending request
     err,_ = __request(srv, __REQ_EDIT, [fname, msg])
     return err == __RSP_OK

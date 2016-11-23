@@ -13,6 +13,7 @@ from tcp.common import __RSP_BADFORMAT,\
      __REQ_FILE, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL
 from socket import error as soc_err
 import tcp.server.fileservice as fs
+import zlib
 
 def __disconnect_client(sock):
     '''Disconnect the client, close the corresponding TCP socket
@@ -46,26 +47,28 @@ def server_process(message,source):
 
     if message.startswith(__REQ_EDIT + __MSG_FIELD_SEP):
         msg = message[2:].split(__MSG_FIELD_SEP)
-        LOG.debug('Client %s:%d will edit file %s ' % (source+(msg[0],)))
-        m_id = fs.change_file(msg[0], msg[1])
+        fn = zlib.decompress(msg[0])
+        LOG.debug('Client %s:%d will edit file %s ' % (source+(fn,)))
+        m_id = fs.change_file(fn, zlib.decompress(msg[1]))
         if m_id == 0:
-            LOG.info('Successfully edited file %s' % msg[0])
+            LOG.info('Successfully edited file %s' % fn)
             return __RSP_OK
-        LOG.error("Unable to edit file %s" % msg[0])
+        LOG.error("Unable to edit file %s" % fn)
         return __RSP_FILENOTFOUND
 
     elif message.startswith(__REQ_DIR):
         LOG.debug('New directory content request from %s:%d.'%source)
-        ret = fs.get_dir()
+        ret = zlib.compress(fs.get_dir())
         return __MSG_FIELD_SEP.join((__RSP_OK,)+(ret,))
 
     elif message.startswith(__REQ_FILE + __MSG_FIELD_SEP):
-        s = message[2:]
+        s = zlib.decompress(message[2:])
         LOG.debug('New file request from %s:%d: %s' % (source+(s,)))
         m = fs.get_file(s)
         if m == None:
             LOG.debug('No such file: %s' % s)
             return __RSP_FILENOTFOUND
+        m = zlib.compress(m)
         #m = map(str,m)
         return __MSG_FIELD_SEP.join((__RSP_OK,)+(m,))
 
