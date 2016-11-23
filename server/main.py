@@ -11,7 +11,7 @@ LOG = logging.getLogger()
 # Imports ---------------------------------------------------------------------
 from tcp.mboard.sessions.server import protocol
 from tcp.mboard.sessions.common import tcp_receive, tcp_send, \
-    MBoardProtocolError
+    FSProtocolError
 from socket import socket, AF_INET, SOCK_STREAM
 from socket import error as soc_error
 from sys import exit
@@ -51,7 +51,7 @@ def mboard_server_main(args):
             m = ''
             try:
                 m = tcp_receive(client_socket)
-            except (soc_error, MBoardProtocolError) as e:
+            except (soc_error, FSProtocolError) as e:
                 LOG.error('Interrupted receiving the data from %s:%d, '\
                           'error: %s' % (source+(e,)))
                 __disconnect_client(client_socket)

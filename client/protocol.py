@@ -8,12 +8,11 @@ FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
 logging.basicConfig(level=logging.DEBUG,format=FORMAT)
 LOG = logging.getLogger()
 # Imports----------------------------------------------------------------------
-from tcp.mboard.sessions.common import __RSP_BADFORMAT,\
-     __REQ_DIR, __MSG_FIELD_SEP, __RSP_OK, __REQ_EDIT,\
-     __REQ_FILE, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL,\
-     __CTR_MSGS, tcp_send, tcp_receive, __ERR_MSGS,\
-     __RSP_OK, __RSP_BADFORMAT, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL,\
-     __RSP_ERRTRANSM, __RSP_CANT_CONNECT
+from tcp.mboard.sessions.common import __RSP_BADFORMAT, __REQ_DIR,\
+    __MSG_FIELD_SEP, __RSP_OK, __REQ_EDIT, __REQ_FILE, __RSP_FILENOTFOUND,\
+    __RSP_UNKNCONTROL, __CTR_MSGS, tcp_send, tcp_receive, __ERR_MSGS, __RSP_OK,\
+    __RSP_BADFORMAT, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL, __RSP_ERRTRANSM, \
+    __RSP_CANT_CONNECT
 from socket import socket, AF_INET, SOCK_STREAM
 from socket import error as soc_err
 
@@ -88,7 +87,7 @@ def __request(srv,r_type,args):
     rsp = None
     try:
         rsp = tcp_receive(sock)
-    except (soc_err, MBoardProtocolError) as e:
+    except (soc_err, FSProtocolError) as e:
         # In case we failed in the middle of transfer we should report error
         LOG.error('Interrupted receiving the data from %s:%d, '\
                   'error: %s' % (srv+(e,)))
