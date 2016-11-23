@@ -1,24 +1,26 @@
-from socket import AF_INET, SOCK_STREAM, socket
+# Imports----------------------------------------------------------------------
+from tcp.mboard.sessions.server.main import mboard_server_main
+from tcp.mboard.sessions.common import DEFAULT_SERVER_INET_ADDR,\
+    DEFAULT_SERVER_PORT
+from argparse import ArgumentParser # Parsing command line arguments
+from sys import path,argv
+from os.path import abspath, sep
+# Main method -----------------------------------------------------------------
+if __name__ == '__main__':
+    # Find the script absolute path, cut the working directory
+    a_path = sep.join(abspath(argv[0]).split(sep)[:-1])
+    # Append script working directory into PYTHONPATH
+    path.append(a_path)
+    # Parsing arguments
+    parser = ArgumentParser()
+    parser.add_argument('-l','--listenaddr', \
+                        help='Bind server socket to INET address, '\
+                        'defaults to %s' % DEFAULT_SERVER_INET_ADDR, \
+                        default=DEFAULT_SERVER_INET_ADDR)
+    parser.add_argument('-p','--listenport', \
+                        help='Bind server socket to UDP port, '\
+                        'defaults to %d' % DEFAULT_SERVER_PORT, \
+                        default=DEFAULT_SERVER_PORT)
+    args = parser.parse_args()
 
-def CommitData(str):
-    print str
-    text_file = open("SavedData.txt",'w')
-    text_file.write(str)
-    text_file.close()
-
-s = socket(AF_INET, SOCK_STREAM)
-s.bind(('127.0.0.1',7777))
-
-backlog = 0
-s.listen(backlog)
-print ('Server started and listening...')
-
-client_socket,client_addr = s.accept()
-recv_buffer_length = 1024
-message = client_socket.recv(recv_buffer_length)
-#print message
-CommitData(message)
-#client_socket.close()
-#s.close()
-
-
+    mboard_server_main(args)
