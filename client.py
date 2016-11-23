@@ -5,8 +5,8 @@ Created on Sep 14, 2016
 @author: devel
 '''
 # Imports----------------------------------------------------------------------
-from tcp.mboard.sessions.client.main import mboard_client_main
-from tcp.mboard.sessions.common import DEFAULT_SERVER_INET_ADDR,\
+from tcp.client.main import client_main
+from tcp.common import DEFAULT_SERVER_INET_ADDR,\
     DEFAULT_SERVER_PORT
 from argparse import ArgumentParser # Parsing command line arguments
 from sys import path,argv
@@ -42,4 +42,4 @@ if __name__ == '__main__':
                         default='')
     args = parser.parse_args()
     # Run Mboard Client
-    mboard_client_main(args)
+    client_main(args)

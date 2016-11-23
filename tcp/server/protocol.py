@@ -8,11 +8,11 @@ FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
 logging.basicConfig(level=logging.DEBUG,format=FORMAT)
 LOG = logging.getLogger()
 # Imports----------------------------------------------------------------------
-from tcp.mboard.sessions.common import __RSP_BADFORMAT,\
+from tcp.common import __RSP_BADFORMAT,\
      __REQ_DIR, __MSG_FIELD_SEP, __RSP_OK, __REQ_EDIT,\
      __REQ_FILE, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL
 from socket import error as soc_err
-import tcp.mboard.sessions.server.fileservice as fs
+import tcp.server.fileservice as fs
 
 def __disconnect_client(sock):
     '''Disconnect the client, close the corresponding TCP socket

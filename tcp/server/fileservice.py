@@ -52,7 +52,6 @@ def change_file(filename, changes):
 
 def get_dir():
     gen = os.walk(__PATH)
-    print(gen)
     res = ""
     for folder in gen:
         r = folder[0][len(__PATH):] + ";"

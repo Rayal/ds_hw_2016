@@ -2,15 +2,15 @@
 #
 # Implements remote file system TCP server
 # -----------------------------------------------------------------------------
-from tcp.mboard.sessions.server.protocol import __disconnect_client
+from tcp.server.protocol import __disconnect_client
 # Setup Python logging ------------------ -------------------------------------
 import logging
 FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
 logging.basicConfig(level=logging.DEBUG,format=FORMAT)
 LOG = logging.getLogger()
 # Imports ---------------------------------------------------------------------
-from tcp.mboard.sessions.server import protocol
-from tcp.mboard.sessions.common import tcp_receive, tcp_send, \
+from tcp.server import protocol
+from tcp.common import tcp_receive, tcp_send, \
     FSProtocolError
 from socket import socket, AF_INET, SOCK_STREAM
 from socket import error as soc_error
@@ -19,7 +19,7 @@ from sys import exit
 # currently busy processing the other request
 __DEFAULT_SERVER_TCP_CLIENTS_QUEUE = 10
 
-def mboard_server_main(args):
+def server_main(args):
     '''Runs the File Service server
     @param args: ArgParse collected arguments
     '''

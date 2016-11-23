@@ -8,7 +8,7 @@ FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
 logging.basicConfig(level=logging.DEBUG,format=FORMAT)
 LOG = logging.getLogger()
 # Imports----------------------------------------------------------------------
-from tcp.mboard.sessions.common import __RSP_BADFORMAT, __REQ_DIR,\
+from tcp.common import __RSP_BADFORMAT, __REQ_DIR,\
     __MSG_FIELD_SEP, __RSP_OK, __REQ_EDIT, __REQ_FILE, __RSP_FILENOTFOUND,\
     __RSP_UNKNCONTROL, __CTR_MSGS, tcp_send, tcp_receive, __ERR_MSGS, __RSP_OK,\
     __RSP_BADFORMAT, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL, __RSP_ERRTRANSM, \
