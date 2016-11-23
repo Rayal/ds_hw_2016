@@ -8,13 +8,14 @@ FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
 logging.basicConfig(level=logging.DEBUG,format=FORMAT)
 LOG = logging.getLogger()
 # Imports----------------------------------------------------------------------
-from tcp.common import __RSP_BADFORMAT, __REQ_DIR,\
+from tcp.common import __RSP_BADFORMAT, __REQ_DIR, __REQ_UPDATE,\
     __MSG_FIELD_SEP, __RSP_OK, __REQ_EDIT, __REQ_FILE, __RSP_FILENOTFOUND,\
     __RSP_UNKNCONTROL, __CTR_MSGS, tcp_send, tcp_receive, __ERR_MSGS, __RSP_OK,\
     __RSP_BADFORMAT, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL, __RSP_ERRTRANSM, \
     __RSP_CANT_CONNECT
 from socket import socket, AF_INET, SOCK_STREAM
 from socket import error as soc_err
+import tcp.fileservice as fs
 
 def __disconnect(sock):
     '''Disconnect from the server, close the TCP socket
@@ -141,8 +142,16 @@ def edit_file(srv, filename, changes):
     @returns True if successfully published, else False
     '''
     # Try converting to utf-8
-    msg = changes.encode('utf-8')
+    try:
+        msg = changes.encode('utf-8')
+        fname = filename.encode('utf-8')
+        # Sending request
+        err,_ = __request(srv, __REQ_EDIT, [fname, msg])
+        return err == __RSP_OK
+    except UnicodeDecodeError:
+        return False
+
+def request_update(srv, filename):
     fname = filename.encode('utf-8')
-    # Sending request
-    err,_ = __request(srv, __REQ_EDIT, [fname, msg])
-    return err == __RSP_OK
+    err,data = __request(srv, __REQ_UPDATE, [fname])
+    return data[0] if err == __RSP_OK else "0"

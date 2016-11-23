@@ -6,8 +6,34 @@ LOG = logging.getLogger()
 
 # Setup Path for files --------------------------------------------------------
 import os
+from time import time
 from os.path import abspath
+from collections import defaultdict
+from tcp.common import __FILE_SEP
 __PATH = abspath("files/") + "/"
+
+def update_dir():
+    # This function updates the files dictionary to show when the files were last changed.
+    gen = os.walk(__PATH)
+    _files = gen.next()[-1]
+    del gen
+
+    files = defaultdict(float)
+
+    for filename in _files:
+        tme = os.stat(__PATH + filename).st_atime
+        if files[filename] != tme:
+            files[filename] = tme
+
+    return files
+
+def update_file(filename):
+    try:
+        tme = os.stat(__PATH + filename).st_atime
+    except OSError as e:
+        LOG.error(e)
+        return 0
+    return tme
 
 def create_file(filename):
     try:
@@ -52,15 +78,6 @@ def change_file(filename, changes):
 
 def get_dir():
     gen = os.walk(__PATH)
-    res = ""
-    for folder in gen:
-        r = folder[0][len(__PATH):] + ";"
-        for f in folder[1]:
-            r += " "
-            r += f
-        r += ";"
-        for f in folder[2]:
-            r += " "
-            r += f
-        res += r + "|"
-    return res
+    _files = gen.next()[-1]
+    del gen
+    return __FILE_SEP.join(_files)

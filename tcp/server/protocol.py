@@ -8,11 +8,11 @@ FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
 logging.basicConfig(level=logging.DEBUG,format=FORMAT)
 LOG = logging.getLogger()
 # Imports----------------------------------------------------------------------
-from tcp.common import __RSP_BADFORMAT,\
+from tcp.common import __RSP_BADFORMAT, __REQ_UPDATE, \
      __REQ_DIR, __MSG_FIELD_SEP, __RSP_OK, __REQ_EDIT,\
      __REQ_FILE, __RSP_FILENOTFOUND, __RSP_UNKNCONTROL
 from socket import error as soc_err
-import tcp.server.fileservice as fs
+import tcp.fileservice as fs
 
 def __disconnect_client(sock):
     '''Disconnect the client, close the corresponding TCP socket
@@ -49,6 +49,15 @@ def server_process(message,source):
         LOG.error("Unable to edit file %s" % msg[0])
         return __RSP_FILENOTFOUND
 
+    elif message.startswith(__REQ_UPDATE + __MSG_FIELD_SEP):
+        msg = message[2:]
+        LOG.debug('Client %s:%d requests update on file %s ' % (source+(msg,)))
+        res = request_update(msg)
+        if res == 0:
+            LOG.error("File %s not found." % msg)
+            return __RSP_FILENOTFOUND
+        return __MSG_FIELD_SEP.join((__RSP_OK,) + (str(res),))
+
     elif message.startswith(__REQ_DIR):
         LOG.debug('New directory content request from %s:%d.'%source)
         ret = fs.get_dir()
@@ -67,3 +76,9 @@ def server_process(message,source):
     else:
         LOG.debug('Unknown control message received: %s ' % message)
         return __RSP_UNKNCONTROL
+
+def request_update(filename):
+    files = fs.update_dir()
+    if filename in files:
+        return files[filename]
+    return 0

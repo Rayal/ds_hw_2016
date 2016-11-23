@@ -15,9 +15,11 @@ MAX_PDU_SIZE = 200*1024*1024 # Reasonable amount of data to store in RAM
 __REQ_DIR = '1'
 __REQ_FILE = '2'
 __REQ_EDIT = '3'
+__REQ_UPDATE = '4'
 __CTR_MSGS = { __REQ_DIR:'Get directory data',
                __REQ_FILE:'Get file',
-               __REQ_EDIT:'Edit file'
+               __REQ_EDIT:'Edit file',
+               __REQ_UPDATE:'File change time'
               }
 # Responses--------------------------------------------------------------------
 __RSP_OK = '0'
@@ -35,6 +37,7 @@ __ERR_MSGS = { __RSP_OK:'No Error',
                }
 # Field separator for sending multiple values ---------------------------------
 __MSG_FIELD_SEP = chr(30)
+__FILE_SEP = chr(28)
 # Exceptions ------------------------------------------------------------------
 class FSProtocolError(Exception):
     '''Should be thrown internally on client or server while receiving the
