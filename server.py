@@ -1,5 +1,5 @@
 # Imports----------------------------------------------------------------------
-from tcp.server.main import mboard_server_main
+from tcp.server.main import server_main
 from tcp.common import DEFAULT_SERVER_INET_ADDR,\
     DEFAULT_SERVER_PORT
 from argparse import ArgumentParser # Parsing command line arguments
@@ -23,4 +23,4 @@ if __name__ == '__main__':
                         default=DEFAULT_SERVER_PORT)
     args = parser.parse_args()
 
-    mboard_server_main(args)
+    server_main(args)

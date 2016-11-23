@@ -19,7 +19,7 @@ from sys import exit
 # currently busy processing the other request
 __DEFAULT_SERVER_TCP_CLIENTS_QUEUE = 10
 
-def mboard_server_main(args):
+def server_main(args):
     '''Runs the File Service server
     @param args: ArgParse collected arguments
     '''
